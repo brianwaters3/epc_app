@@ -1,0 +1,7 @@
+build
+bin/epc_app
+gmon.out
+conf/epcappclient
+conf/epcappserver
+out.txt
+logs
