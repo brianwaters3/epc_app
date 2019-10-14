@@ -9,10 +9,11 @@ SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 DEPENDS := $(OBJECTS:%.o=%.d)
-CFLAGS := -g -pthread -std=c++11 # -Wall
+CFLAGS := -g -O0 -pthread -std=c++11 # -Wall
 LFLAGS := -g -pthread -lpthread -Wl,-rpath,/usr/local/lib/x86_64-linux-gnu:/usr/local/lib
 LIBS := \
  /usr/local/lib/libepc.a \
+ /usr/local/lib/libpistache.a \
  /usr/local/lib/libcares.so \
  /usr/local/lib/libfdcore.so \
  /usr/local/lib/libfdproto.so \

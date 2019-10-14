@@ -1,3 +1,19 @@
+/*
+* Copyright (c) 2019 Sprint
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 #include <signal.h>
 #include <iostream>
 #include <limits>
@@ -22,8 +38,6 @@ void signal_handler(int signal)
       {
          ELogger::log(LOG_SYSTEM).startup( "Setting shutdown event" );
          g_app.setShutdownEvent();
-         // shutdownFlag = true;
-         // shutdownEvent.set();
          break;
       }
    }
@@ -142,10 +156,6 @@ int main(int argc, char *argv[])
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 Void EpcApplication::shutdown()
 {
    if (m_worker)
@@ -198,6 +208,8 @@ Void EpcApplication::startup(EGetOpt &opt)
       EStatistics::Interface &ifcswm( EStatistics::addInterface(m_swm->getDict().app().getId(), EStatistics::ProtocolType::diameter, "SWm") );
 
       // add the template messages
+      ifcswm.addMessageStatsTemplate( m_swm->getDict().cmdDER().getCommandCode(), m_swm->getDict().cmdDER().getName() );
+      ifcswm.addMessageStatsTemplate( m_swm->getDict().cmdDEA().getCommandCode() | DIAMETER_ANSWER_BIT, m_swm->getDict().cmdDEA().getName() );
       ifcswm.addMessageStatsTemplate( m_swm->getDict().cmdAAR().getCommandCode(), m_swm->getDict().cmdAAR().getName() );
       ifcswm.addMessageStatsTemplate( m_swm->getDict().cmdAAA().getCommandCode() | DIAMETER_ANSWER_BIT, m_swm->getDict().cmdAAA().getName() );
       ifcswm.addMessageStatsTemplate( m_swm->getDict().cmdSTR().getCommandCode(), m_swm->getDict().cmdSTR().getName() );
@@ -210,6 +222,18 @@ Void EpcApplication::startup(EGetOpt &opt)
       // initialize the statistics
       EStatistics::init( ELogger::log(LOG_SYSTEM) );
 
+      // intialize the CLI
+      m_cliep = new ECliEndpoint( opt.get("/EpcApplication/cliport",1234) );
+
+      m_statsget = new CliStatsGet( ELogger::log(LOG_AUDIT) );
+      m_cliep->registerHandler( *m_statsget );
+
+      m_statsresetput = new CliStatsResetPut( ELogger::log(LOG_AUDIT) );
+      m_cliep->registerHandler( *m_statsresetput );
+
+      m_cliep->start();
+
+      // start diameter
       if(!m_diameter.start())
       {
          ELogger::log(LOG_SYSTEM).major("Failure starting Diameter");
@@ -391,7 +415,7 @@ Void EpcWorker::onSendRAR(EThreadMessage &msg)
    // alternate method of populating and sending a request
 
    //  creates the AARreq object
-   swm::ASRreq *s = new swm::ASRreq( m_app.getSwmApplication() );
+   swm::RARreq *s = new swm::RARreq( m_app.getSwmApplication() );
 
    // setting preserve to TRUE prevents the Answer object recieved in the
    // processAnswer() method from being destroyed after processAnswer() returns.
@@ -647,9 +671,8 @@ Void EpcWorker::onRcvdRAA(EThreadMessage &msg)
 MenuThread::MenuThread( EpcApplication &app)
    : m_app(app),
       m_shutdown(False)
-      {
-         
-      }
+{
+}
 
 Void MenuThread::shutdown()
 {
@@ -727,7 +750,7 @@ Void MenuThread::displayMenu()
    else
    {
       std::cout << std::endl << std::endl
-         << "**********  Client Menu  **********" << std::endl
+         << "**********  Server Menu  **********" << std::endl
          << "  1) Send Abort-Session-Request (ASR)" << std::endl
          << "  2) Send Re-Auth-Request (RAR)" << std::endl
          << " 99) Quit" << std::endl

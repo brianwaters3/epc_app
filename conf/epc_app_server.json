@@ -8,7 +8,8 @@
             "peerport": 3868,
             "peerip": "10.0.2.15"
         },
-        "role": "server"
+        "role": "server",
+        "cliport": 9081
       },
     "EpcTools": {
         "EnablePublicObjects": false,
