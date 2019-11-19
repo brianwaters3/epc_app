@@ -23,7 +23,7 @@
 #include "rapidjson/stringbuffer.h"
 
 CliStatsGet::CliStatsGet(ELogger &audit)
-   : ECliHandler( ECliHandler::HttpMethod::httpGet, "/statistics", audit )
+   : EManagementHandler( EManagementHandler::HttpMethod::httpGet, "/statistics", audit )
 {
 }
 
@@ -114,7 +114,7 @@ Void CliStatsGet::process(const Pistache::Http::Request& request, Pistache::Http
 ////////////////////////////////////////////////////////////////////////////////
 
 CliStatsResetPut::CliStatsResetPut(ELogger &audit)
-   : ECliHandler( ECliHandler::HttpMethod::httpPut, "/statistics", audit )
+   : EManagementHandler( EManagementHandler::HttpMethod::httpPut, "/statistics", audit )
 {
 }
 

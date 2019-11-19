@@ -223,7 +223,7 @@ Void EpcApplication::startup(EGetOpt &opt)
       EStatistics::init( ELogger::log(LOG_SYSTEM) );
 
       // intialize the CLI
-      m_cliep = new ECliEndpoint( opt.get("/EpcApplication/cliport",1234) );
+      m_cliep = new EManagementEndpoint( opt.get("/EpcApplication/cliport",1234) );
 
       m_statsget = new CliStatsGet( ELogger::log(LOG_AUDIT) );
       m_cliep->registerHandler( *m_statsget );

@@ -17,12 +17,12 @@
 #ifndef __CLI_H
 #define __CLI_H
 
-#include "ecli.h"
+#include "emgmt.h"
 #include "elogger.h"
 
 //#include "epc_app.h"
 
-class CliStatsGet : public ECliHandler
+class CliStatsGet : public EManagementHandler
 {
 public:
    CliStatsGet(ELogger &audit); 
@@ -33,7 +33,7 @@ private:
    CliStatsGet();
 };
 
-class CliStatsResetPut : public ECliHandler
+class CliStatsResetPut : public EManagementHandler
 {
 public:
    CliStatsResetPut(ELogger &audit); 

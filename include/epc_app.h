@@ -21,7 +21,7 @@
 #include "efd.h"
 #include "estats.h"
 #include "esynch.h"
-#include "ethread.h"
+#include "etevent.h"
 
 #include "cli.h"
 #include "swm.h"
@@ -135,7 +135,7 @@ private:
 
    swm::Application *m_swm;
 
-   ECliEndpoint *m_cliep;
+   EManagementEndpoint *m_cliep;
    CliStatsGet  *m_statsget;
    CliStatsResetPut *m_statsresetput;
 };
